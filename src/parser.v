@@ -43,14 +43,14 @@ struct ReturnStatement {
 }
 
 struct BinaryExpression {
-	left  string
-	op    string // "+", "-", "*", "/"
-	right string
+	left  Expression
+	op    string
+	right Expression
 }
 
 struct IfExpression {
 	condition  Expression
-	then_value Expression // For inline: just the expression
+	then_value Expression
 	else_value Expression
 }
 
@@ -268,6 +268,8 @@ fn (mut p Parser) parse_statement() Statement {
 			}
 		}
 		.if {
+			p.expect(.if) or { panic(err) }
+
 			return p.parse_if_statement()
 		}
 		else {}
@@ -298,7 +300,7 @@ fn (mut p Parser) parse_statement() Statement {
 }
 
 fn (mut p Parser) parse_if_statement() IfStatement {
-	p.expect(.if) or { panic(err) }
+	// p.expect(.if) or { panic(err) }
 
 	// Parse condition
 	condition := p.parse_expression()
@@ -333,9 +335,24 @@ fn (mut p Parser) parse_if_statement() IfStatement {
 }
 
 fn (mut p Parser) parse_expression() Expression {
-	first_token := p.peek()
+	mut left := p.parse_primary()
 
-	match first_token.typ {
+	if p.peek().typ in [.plus, .minus, .star, .slash, .gt, .lt, .gte, .lte, .eq_eq, .not_eq] {
+		op_token := p.next()
+		right := p.parse_expression()
+
+		return BinaryExpression{
+			left:  left
+			op:    op_token.value
+			right: right
+		}
+	}
+
+	return left
+}
+
+fn (mut p Parser) parse_primary() Expression {
+	match p.peek().typ {
 		.number {
 			tok := p.next()
 			return NumberLiteral{
@@ -344,34 +361,16 @@ fn (mut p Parser) parse_expression() Expression {
 		}
 		.char {
 			tok := p.next()
-			// tok.value is the character as a string, get its ASCII value
 			return CharLiteral{
-				value: tok.value.int() // First char's ASCII value
+				value: tok.value.int()
 			}
 		}
 		.identifier {
-			// Could be just an identifier, or start of binary expression
-			left_token := p.next()
-			left := left_token.value
-
-			// Check for operator
-			if p.peek().typ in [.plus, .minus, .star, .slash, .gt, .lt, .gte, .lte, .eq_eq, .not_eq] {
-				// Binary expression - existing code
-				op_token := p.next()
-				right_token := p.expect(.identifier) or { panic(err) }
-
-				return BinaryExpression{
-					left:  left
-					op:    op_token.value
-					right: right_token.value
-				}
-			} else {
-				// Just an identifier
-				return left
-			}
+			tok := p.next()
+			return tok.value // Just the identifier name
 		}
 		else {
-			panic('Expected expression, got ${first_token.typ}')
+			panic('Expected primary expression, got ${p.peek().typ}')
 		}
 	}
 }

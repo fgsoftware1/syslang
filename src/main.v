@@ -42,6 +42,6 @@ fn main() {
 	println('=== ASSEMBLY ===')
 	println(codegen.to_string())
 	asm_output := codegen.to_string()
-	os.write_file('output.asm', asm_output) or { panic(err) }
+	os.write_file('./output.asm', asm_output) or { panic(err) }
 	println('Assembly written to output.asm')
 }
