@@ -4,11 +4,7 @@ struct Lexer {
 }
 
 fn (mut l: Lexer) next() -> char {
-    if 1 > 5 {
-        print();
-    } else {
-        print();
-    }
+    if 1 != 2 {} else{}
     return 'A';
 }
 
@@ -18,4 +14,12 @@ fn add(a: int, b: int) -> int {
 
 lowlevel get42() -> @rax {
     mov(@rax, 42);
+}
+
+fn test() -> int {
+    if 1 != 2 {
+        return 5;
+    } else {
+        return 10;
+    }
 }

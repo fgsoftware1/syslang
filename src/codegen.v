@@ -21,6 +21,10 @@ fn (mut cg CodeGen) emit(line string) {
 	cg.output << line
 }
 
+fn (mut cg CodeGen) emit_comment(line string, comment string) {
+	cg.output << '    ${line}  ; ${comment}'
+}
+
 fn (cg CodeGen) to_string() string {
 	return cg.output.join('\n')
 }
@@ -95,28 +99,35 @@ fn (mut cg CodeGen) generate_condition_jump(expr Expression, label string) {
 		BinaryExpression {
 			comparison_ops := ['>', '<', '>=', '<=', '==', '!=']
 			if comparison_ops.contains(expr.op) {
-				left_str := cg.expression_value_to_string(expr.left)
-				right_str := cg.expression_value_to_string(expr.right)
+				// Evaluate left into rax
+				cg.generate_expression_to_rax(expr.left)
+				cg.emit('    push rax') // Save it
 
-				cg.emit('    cmp ${left_str}, ${right_str}')
+				// Evaluate right into rax
+				cg.generate_expression_to_rax(expr.right)
+				cg.emit('    mov rbx, rax') // Move to rbx
 
+				// Pop left back
+				cg.emit('    pop rax')
+
+				// Now compare rax vs rbx
+				cg.emit('    cmp rax, rbx')
+
+				// Jump based on comparison
 				jump_instr := match expr.op {
-					'>' { 'jle' } // Jump if left <= right (condition false)
-					'<' { 'jge' } // Jump if left >= right (condition false)
-					'>=' { 'jl' } // Jump if left < right (condition false)
-					'<=' { 'jg' } // Jump if left > right (condition false)
-					'==' { 'jne' } // Jump if not equal (condition false)
-					'!=' { 'je' } // Jump if equal (condition false)
+					'>' { 'jle' }
+					'<' { 'jge' }
+					'>=' { 'jl' }
+					'<=' { 'jg' }
+					'==' { 'jne' }
+					'!=' { 'je' }
 					else { panic('Unhandled comparison operator: ${expr.op}') }
 				}
 				cg.emit('    ${jump_instr} ${label}')
-			} else {
-				cg.generate_expression_to_rax(expr)
-				cg.emit('    test rax, rax')
-				cg.emit('    jz ${label}')
 			}
 		}
 		else {
+			// Non-comparison expression - test if zero
 			cg.generate_expression_to_rax(expr)
 			cg.emit('    test rax, rax')
 			cg.emit('    jz ${label}')
@@ -172,28 +183,87 @@ fn (mut cg CodeGen) generate_statement(stmt Statement) {
 fn (mut cg CodeGen) generate_expression_to_rax(expr Expression) {
 	match expr {
 		BinaryExpression {
-			left_reg := cg.param_registers[expr.left]
-			right_reg := cg.param_registers[expr.right]
+			// Generate left side into rax
+			cg.generate_expression_to_rax(expr.left)
 
-			cg.emit('    mov rax, ${left_reg}')
+			// Save left result on stack
+			cg.emit('    push rax')
 
-			// Now handle the operator
+			// Generate right side into rax
+			cg.generate_expression_to_rax(expr.right)
+
+			// Move right to a temp register
+			cg.emit('    mov rbx, rax')
+
+			// Pop left back into rax
+			cg.emit('    pop rax')
+
 			match expr.op {
-				'+' { cg.emit('    add rax, ${right_reg}') }
-				'-' { cg.emit('    sub rax, ${right_reg}') }
-				'*' { cg.emit('    imul rax, ${right_reg}') }
-				'/' { cg.emit('    idiv ${right_reg}') }
-				else { panic('Unknown operator: ${expr.op}') }
+				'+' {
+					cg.emit('    add rax, rbx')
+				}
+				'-' {
+					cg.emit('    sub rax, rbx')
+				}
+				'*' {
+					cg.emit('    imul rax, rbx')
+				}
+				'/' {
+					// Division is special - need rdx:rax / rbx
+					cg.emit('    xor rdx, rdx')
+					cg.emit('    idiv rbx')
+				}
+				'>' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    setg al')
+					cg.emit('    movzx rax, al')
+				}
+				'<' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    setl al')
+					cg.emit('    movzx rax, al')
+				}
+				'>=' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    setge al')
+					cg.emit('    movzx rax, al')
+				}
+				'<=' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    setle al')
+					cg.emit('    movzx rax, al')
+				}
+				'==' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    sete al')
+					cg.emit('    movzx rax, al')
+				}
+				'!=' {
+					cg.emit('    cmp rax, rbx')
+					cg.emit('    setne al')
+					cg.emit('    movzx rax, al')
+				}
+				else {
+					panic('Unknown operator: ${expr.op}')
+				}
+			}
+		}
+		string {
+			if expr in cg.param_registers {
+				reg := cg.param_registers[expr]
+				cg.emit('    mov rax, ${reg}')
+			} else {
+				panic('Unknown identifier: ${expr}')
 			}
 		}
 		NumberLiteral {
 			cg.emit('    mov rax, ${expr.value}')
 		}
 		CharLiteral {
-			cg.emit('    mov rax, ${u8(expr.value)}')
+			cg.emit('    mov rax, ${expr.value}')
 		}
-		else {
-			panic('Unsupported expression in generate_expression_to_rax: ${expr}')
+		IfExpression {
+			panic('Not yet implemented!')
 		}
 	}
 }
@@ -205,17 +275,6 @@ fn (_ CodeGen) argument_to_string(arg Argument) string {
 		}
 		ImmediateOperand {
 			return arg.value.str()
-		}
-	}
-}
-
-fn (cg CodeGen) expression_value_to_string(expr Expression) string {
-	match expr {
-		string {
-			return cg.param_registers[expr]
-		}
-		else {
-			return error('No valid ASCII value!').str()
 		}
 	}
 }
