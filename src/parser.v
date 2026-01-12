@@ -1,7 +1,7 @@
 module main
 
 type Argument = RegisterOperand | ImmediateOperand
-type Statement = FunctionCall | ReturnStatement | IfStatement | LetStatement
+type Statement = FunctionCall | ReturnStatement | IfStatement | LetStatement | WhileStatement
 type Expression = BinaryExpression | string | NumberLiteral | CharLiteral | IfExpression
 type Function = LowlevelFunction | NormalFunction
 
@@ -9,6 +9,11 @@ struct LetStatement {
 	name  string
 	typ   string
 	value Expression
+}
+
+struct WhileStatement {
+	condition Expression
+	body      []Statement
 }
 
 struct RegisterOperand {
@@ -283,6 +288,10 @@ fn (mut p Parser) parse_statement() Statement {
 
 			return p.parse_let_statement()
 		}
+		.while {
+			p.expect(.while) or { panic(err) }
+			return p.parse_while_statement()
+		}
 		else {}
 	}
 	// Get the name
@@ -335,6 +344,23 @@ fn (mut p Parser) parse_let_statement() LetStatement {
 		name:  name
 		typ:   typ
 		value: value
+	}
+}
+
+fn (mut p Parser) parse_while_statement() WhileStatement {
+	condition := p.parse_expression()
+
+	// Expect '{'
+	p.expect(.lbrace) or { panic(err) }
+	mut scope := []Statement{}
+	for p.peek().typ != .rbrace {
+		scope << p.parse_statement()
+	}
+	p.expect(.rbrace) or { panic(err) }
+
+	return WhileStatement{
+		condition: condition
+		body:      scope
 	}
 }
 

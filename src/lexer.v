@@ -10,6 +10,7 @@ enum TokenType {
 	if       // if
 	else     // else
 	let      // let
+	while    // while
 
 	// Operators
 	plus  // +
@@ -158,6 +159,7 @@ fn keyword_or_identifier(word string) TokenType {
 		'if' { .if }
 		'else' { .else }
 		'let' { .let }
+		'while' { .while }
 		else { .identifier }
 	}
 }

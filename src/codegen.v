@@ -168,6 +168,27 @@ fn (mut cg CodeGen) generate_if_statement(stmt IfStatement) {
 	cg.emit('    ; --- End if ---')
 }
 
+fn (mut cg CodeGen) generate_while_statement(stmt WhileStatement) {
+	cg.emit('    ; --- While statement ---')
+	start_label := 'start_${cg.label_counter}'
+	end_label := 'end_${cg.label_counter}'
+	cg.label_counter++
+	cg.emit('${start_label}:')
+	cg.emit('    ; Evaluate condition')
+	cg.generate_condition_jump(stmt.condition, end_label)
+
+	// Generate while body
+	cg.emit('    ; Then block')
+	for s in stmt.body {
+		cg.generate_statement(s)
+	}
+	cg.emit_comment('jmp ${start_label}', 'Keep looping')
+
+	// End of if statement
+	cg.emit('${end_label}:')
+	cg.emit('    ; --- End while ---')
+}
+
 fn (mut cg CodeGen) generate_statement(stmt Statement) {
 	match stmt {
 		FunctionCall {
@@ -199,6 +220,9 @@ fn (mut cg CodeGen) generate_statement(stmt Statement) {
 
 			// Store rax to stack location
 			cg.emit_comment('mov [rbp-${cg.stack_offset}], rax', 'Store to ${stmt.name}')
+		}
+		WhileStatement {
+			cg.generate_while_statement(stmt)
 		}
 	}
 }
