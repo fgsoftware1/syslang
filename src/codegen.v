@@ -60,14 +60,22 @@ fn (mut cg CodeGen) generate_lowlevel_function(func LowlevelFunction) {
 }
 
 fn (mut cg CodeGen) generate_normal_function(func NormalFunction) {
-	// Build parameter -> register mapping
 	cg.param_registers = map[string]string{}
 
-	for i, param in func.params {
-		if i < sysv_arg_registers.len {
-			cg.param_registers[param.name] = sysv_arg_registers[i]
+	mut reg_idx := 0
+
+	// Receiver get into RDI
+	if r := func.receiver {
+		cg.param_registers[r.name] = sysv_arg_registers[reg_idx]
+		reg_idx++
+	}
+
+	for param in func.params {
+		if reg_idx < sysv_arg_registers.len {
+			cg.param_registers[param.name] = sysv_arg_registers[reg_idx]
+			reg_idx++
 		} else {
-			panic('More than 6 parameters not supported yet')
+			panic('More than ${sysv_arg_registers.len} parameters not supported yet')
 		}
 	}
 
@@ -77,7 +85,8 @@ fn (mut cg CodeGen) generate_normal_function(func NormalFunction) {
 	cg.emit_comment('push rbp', 'Save old base pointer')
 	cg.emit_comment('mov rbp, rsp', 'Set up new stack frame')
 
-	// TODO: allocate stack for variables
+	// TODO: allocate stack for variables properly
+	cg.emit_comment('sub rsp, 64', 'Allocate space for locals (Hack)')
 
 	cg.emit('    ; Function body')
 	for stmt in func.body {

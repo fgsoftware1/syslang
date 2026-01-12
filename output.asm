@@ -3,6 +3,7 @@ global add
 add:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
+    sub rsp, 64  ; Allocate space for locals (Hack)
     ; Function body
     ; Return statement
     ; Evaluate return value
@@ -36,6 +37,7 @@ global next
 next:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
+    sub rsp, 64  ; Allocate space for locals (Hack)
     ; Function body
     ; Return statement
     ; Evaluate return value
@@ -50,6 +52,7 @@ global vars_test
 vars_test:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
+    sub rsp, 64  ; Allocate space for locals (Hack)
     ; Function body
     ; Variable declaration: x
     mov rax, 5  ; Load constant 5
@@ -81,6 +84,7 @@ global if_test
 if_test:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
+    sub rsp, 64  ; Allocate space for locals (Hack)
     ; Function body
     ; --- If statement ---
     ; Evaluate condition
@@ -117,6 +121,7 @@ global while_test
 while_test:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
+    sub rsp, 64  ; Allocate space for locals (Hack)
     ; Function body
     ; Variable declaration: result
     mov rax, 123  ; Load constant 123
