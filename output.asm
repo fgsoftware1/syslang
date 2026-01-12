@@ -4,6 +4,9 @@ next:
     push rbp  ; Save old base pointer
     mov rbp, rsp  ; Set up new stack frame
     ; Function body
+    ; Variable declaration: x
+    mov rax, 0  ; Load constant 0
+    mov [rbp-8], rax  ; Store to x
     ; --- If statement ---
     ; Evaluate condition
     ; Evaluate comparison for conditional jump

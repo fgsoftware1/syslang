@@ -1,9 +1,15 @@
 module main
 
 type Argument = RegisterOperand | ImmediateOperand
-type Statement = FunctionCall | ReturnStatement | IfStatement
+type Statement = FunctionCall | ReturnStatement | IfStatement | LetStatement
 type Expression = BinaryExpression | string | NumberLiteral | CharLiteral | IfExpression
 type Function = LowlevelFunction | NormalFunction
+
+struct LetStatement {
+	name  string
+	typ   string
+	value Expression
+}
 
 struct RegisterOperand {
 	name string
@@ -272,6 +278,11 @@ fn (mut p Parser) parse_statement() Statement {
 
 			return p.parse_if_statement()
 		}
+		.let {
+			p.expect(.let) or { panic(err) }
+
+			return p.parse_let_statement()
+		}
 		else {}
 	}
 	// Get the name
@@ -299,10 +310,35 @@ fn (mut p Parser) parse_statement() Statement {
 	}
 }
 
-fn (mut p Parser) parse_if_statement() IfStatement {
-	// p.expect(.if) or { panic(err) }
+fn (mut p Parser) parse_let_statement() LetStatement {
+	// Get variable name
+	name_token := p.expect(.identifier) or { panic(err) }
+	name := name_token.value
 
-	// Parse condition
+	// Expect ':'
+	p.expect(.colon) or { panic(err) }
+
+	// Get type name
+	type_token := p.expect(.identifier) or { panic(err) }
+	typ := type_token.value // Use .value, not .typ!
+
+	// Expect '='
+	p.expect(.assign) or { panic(err) }
+
+	// Parse the expression (not just identifier!)
+	value := p.parse_expression()
+
+	// Expect ';'
+	p.expect(.semicolon) or { panic(err) }
+
+	return LetStatement{
+		name:  name
+		typ:   typ
+		value: value
+	}
+}
+
+fn (mut p Parser) parse_if_statement() IfStatement {
 	condition := p.parse_expression()
 
 	// Expect '{'

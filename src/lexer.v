@@ -9,6 +9,7 @@ enum TokenType {
 	struct   // struct
 	if       // if
 	else     // else
+	let      // let
 
 	// Operators
 	plus  // +
@@ -156,6 +157,7 @@ fn keyword_or_identifier(word string) TokenType {
 		'struct' { .struct }
 		'if' { .if }
 		'else' { .else }
+		'let' { .let }
 		else { .identifier }
 	}
 }

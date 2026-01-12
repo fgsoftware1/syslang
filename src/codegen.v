@@ -7,6 +7,8 @@ mut:
 	output          []string          // Lines of assembly
 	param_registers map[string]string // Maps parameter names to registers
 	label_counter   int               // 	Number of labels to be created(for control flow)
+	local_variables map[string]int    // Maps variable name -> stack offset
+	stack_offset    int               // Current stack position
 }
 
 fn new_codegen() CodeGen {
@@ -74,6 +76,8 @@ fn (mut cg CodeGen) generate_normal_function(func NormalFunction) {
 	cg.emit('${func.name}:')
 	cg.emit_comment('push rbp', 'Save old base pointer')
 	cg.emit_comment('mov rbp, rsp', 'Set up new stack frame')
+
+	// TODO: allocate stack for variables
 
 	cg.emit('    ; Function body')
 	for stmt in func.body {
@@ -183,6 +187,19 @@ fn (mut cg CodeGen) generate_statement(stmt Statement) {
 		IfStatement {
 			cg.generate_if_statement(stmt)
 		}
+		LetStatement {
+			cg.emit('    ; Variable declaration: ${stmt.name}')
+
+			// Allocate stack space (8 bytes for int)
+			cg.stack_offset += 8
+			cg.local_variables[stmt.name] = cg.stack_offset
+
+			// Evaluate the initializer into rax
+			cg.generate_expression_to_rax(stmt.value)
+
+			// Store rax to stack location
+			cg.emit_comment('mov [rbp-${cg.stack_offset}], rax', 'Store to ${stmt.name}')
+		}
 	}
 }
 
@@ -249,9 +266,15 @@ fn (mut cg CodeGen) generate_expression_to_rax(expr Expression) {
 			}
 		}
 		string {
+			// Check if it's a parameter
 			if expr in cg.param_registers {
 				reg := cg.param_registers[expr]
 				cg.emit_comment('mov rax, ${reg}', 'Load parameter "${expr}"')
+			}
+			// Check if it's a local variable
+			else if expr in cg.local_variables {
+				offset := cg.local_variables[expr]
+				cg.emit_comment('mov rax, [rbp-${offset}]', 'Load variable "${expr}"')
 			} else {
 				panic('Unknown identifier: ${expr}')
 			}
