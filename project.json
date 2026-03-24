@@ -1,0 +1,16 @@
+{
+    "langrev": "1",
+    "warnings": [ "no-unused" ],
+    "sources": [
+        "src/**"
+    ],
+    "build-dir": "build/",
+    "output": "build/",
+    "targets": {
+        "syslang": {
+            "type": "executable"
+        }
+    },
+    "cpu": "generic",
+    "opt": "O0"
+}

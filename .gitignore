@@ -1,0 +1,6 @@
+build/*
+obj/*
+
+*.txt
+*.o
+*.s
