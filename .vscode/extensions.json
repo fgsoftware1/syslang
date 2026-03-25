@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "c3.vscode-c3"
+        "c3.vscode-c3",
+        "bradlc.vscode-tailwindcss"
     ]
 }

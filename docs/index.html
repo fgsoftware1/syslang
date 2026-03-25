@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme') || 'system';
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+            if (isDark) document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <title>Syslang Documentation</title>
+    <style>
+        .sidebar-neon-magenta {
+            background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%);
+            border-right: 1px solid rgba(255, 0, 255, 0.27);
+        }
+        
+        .sidebar-neon-cyan {
+            background: linear-gradient(180deg, #0a1a2e 0%, #1b3a4e 50%, #0a1a2e 100%);
+            border-right: 1px solid rgba(0, 255, 255, 0.27);
+        }
+        
+        .sidebar-neon-magenta .nav-section-toggle {
+            color: #d4b8e6 !important;
+        }
+        
+        .sidebar-neon-magenta .nav-child {
+            color: #d4b8e6 !important;
+        }
+        
+        .sidebar-neon-magenta .nav-link {
+            color: #d4b8e6 !important;
+        }
+        
+        .sidebar-neon-magenta .nav-link:hover {
+            background: rgba(255, 0, 255, 0.2);
+            color: #ff00ff !important;
+        }
+        
+        .sidebar-neon-magenta .nav-section-toggle:hover {
+            color: #ff66ff !important;
+        }
+        
+        .sidebar-neon-magenta .nav-children .absolute {
+            background: rgba(255, 0, 255, 0.3);
+        }
+        
+        .sidebar-neon-magenta .nav-child:hover {
+            background: rgba(255, 0, 255, 0.15);
+            color: #ff66ff !important;
+        }
+        
+        .sidebar-neon-magenta .brand {
+            color: #ff00ff !important;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.53);
+        }
+        
+        .sidebar-neon-cyan .nav-section-toggle {
+            color: #b8e6f0 !important;
+        }
+        
+        .sidebar-neon-cyan .nav-child {
+            color: #b8e6f0 !important;
+        }
+        
+        .sidebar-neon-cyan .nav-link {
+            color: #b8e6f0 !important;
+        }
+        
+        .sidebar-neon-cyan .nav-link:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff !important;
+        }
+        
+        .sidebar-neon-cyan .nav-section-toggle:hover {
+            color: #66ffff !important;
+        }
+        
+        .sidebar-neon-cyan .nav-children .absolute {
+            background: rgba(0, 255, 255, 0.3);
+        }
+        
+        .sidebar-neon-cyan .nav-child:hover {
+            background: rgba(0, 255, 255, 0.15);
+            color: #0891b2 !important;
+        }
+        
+        /* Right sidebar neon */
+        .sidebar-neon-magenta #rightSidebar {
+            background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%);
+            border-left: 1px solid rgba(255, 0, 255, 0.27);
+        }
+        
+        .sidebar-neon-magenta #rightSidebar .right-nav-title {
+            color: #d4b8e6 !important;
+        }
+        
+        .sidebar-neon-magenta #rightSidebar .right-nav-link {
+            color: #d4b8e6 !important;
+        }
+        
+        .sidebar-neon-magenta #rightSidebar .right-nav-link:hover {
+            color: #ff66ff !important;
+        }
+        
+        .sidebar-neon-cyan #rightSidebar {
+            background: linear-gradient(180deg, #0a1a2e 0%, #1b3a4e 50%, #0a1a2e 100%);
+            border-left: 1px solid rgba(0, 255, 255, 0.27);
+        }
+        
+        .sidebar-neon-cyan #rightSidebar .right-nav-title {
+            color: #b8e6f0 !important;
+        }
+        
+        .sidebar-neon-cyan #rightSidebar .right-nav-link {
+            color: #b8e6f0 !important;
+        }
+        
+        .sidebar-neon-cyan #rightSidebar .right-nav-link:hover {
+            color: #66ffff !important;
+        }
+        
+        .sidebar-neon-magenta.light #rightSidebar {
+            background: linear-gradient(180deg, #faf5fb 0%, #f3e8f5 50%, #faf5fb 100%);
+            border-left: 1px solid rgba(255, 0, 255, 0.2);
+        }
+        
+        .sidebar-neon-magenta.light #rightSidebar .right-nav-title {
+            color: #86198f !important;
+        }
+        
+        .sidebar-neon-magenta.light #rightSidebar .right-nav-link {
+            color: #86198f !important;
+        }
+        
+        .sidebar-neon-magenta.light #rightSidebar .right-nav-link:hover {
+            color: #c026d3 !important;
+        }
+        
+        .sidebar-neon-cyan.light #rightSidebar {
+            background: linear-gradient(180deg, #f0fafb 0%, #e0f2f3 50%, #f0fafb 100%);
+            border-left: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .sidebar-neon-cyan.light #rightSidebar .right-nav-title {
+            color: #155e75 !important;
+        }
+        
+        .sidebar-neon-cyan.light #rightSidebar .right-nav-link {
+            color: #155e75 !important;
+        }
+        
+        .sidebar-neon-cyan.light #rightSidebar .right-nav-link:hover {
+            color: #0891b2 !important;
+        }
+        
+        .sidebar-neon-cyan .brand {
+            color: #00ffff !important;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.53);
+        }
+        
+        .sidebar-neon-magenta.light {
+            background: linear-gradient(180deg, #faf5fb 0%, #f3e8f5 50%, #faf5fb 100%);
+            border-right: 1px solid rgba(255, 0, 255, 0.2);
+        }
+        
+        .sidebar-neon-magenta.light .nav-section-toggle {
+            color: #86198f !important;
+        }
+        
+        .sidebar-neon-magenta.light .nav-child {
+            color: #86198f !important;
+        }
+        
+        .sidebar-neon-cyan.light {
+            background: linear-gradient(180deg, #f0fafb 0%, #e0f2f3 50%, #f0fafb 100%);
+            border-right: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .sidebar-neon-cyan.light .nav-section-toggle {
+            color: #155e75 !important;
+        }
+        
+        .sidebar-neon-cyan.light .nav-child {
+            color: #155e75 !important;
+        }
+        
+        .sidebar-neon-magenta.light .nav-link {
+            color: #86198f !important;
+        }
+        
+        .sidebar-neon-magenta.light .nav-link:hover {
+            background: rgba(255, 0, 255, 0.15);
+            color: #c026d3 !important;
+        }
+        
+        .sidebar-neon-magenta.light .brand {
+            color: #c026d3 !important;
+            text-shadow: 0 0 8px rgba(192, 38, 211, 0.3);
+        }
+        
+        .sidebar-neon-magenta.light .nav-section-toggle:hover {
+            color: #c026d3 !important;
+        }
+        
+        .sidebar-neon-magenta.light .nav-children .absolute {
+            background: rgba(192, 38, 211, 0.3);
+        }
+        
+        .sidebar-neon-magenta.light .nav-child:hover {
+            background: rgba(192, 38, 211, 0.15);
+            color: #c026d3 !important;
+        }
+        
+        .sidebar-neon-cyan.light .nav-link {
+            color: #155e75 !important;
+        }
+        
+        .sidebar-neon-cyan.light .nav-link:hover {
+            background: rgba(0, 255, 255, 0.15);
+            color: #0891b2 !important;
+        }
+        
+        .sidebar-neon-cyan.light .brand {
+            color: #0891b2 !important;
+            text-shadow: 0 0 8px rgba(8, 145, 178, 0.3);
+        }
+        
+        .sidebar-neon-cyan.light .nav-section-toggle:hover {
+            color: #0891b2 !important;
+        }
+        
+        .sidebar-neon-cyan.light .nav-children .absolute {
+            background: rgba(8, 145, 178, 0.3);
+        }
+        
+        .sidebar-neon-cyan.light .nav-child:hover {
+            background: rgba(8, 145, 178, 0.15);
+            color: #0891b2 !important;
+        }
+        
+        .sidebar-neon-cyan.light .brand {
+            color: #008899 !important;
+            text-shadow: 0 0 10px rgba(0, 136, 153, 0.4);
+        }
+        
+        .dropdown-item {
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            text-align: left;
+        }
+        
+        .dropdown-btn {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-arrow {
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-arrow.rotated {
+            transform: rotate(-90deg);
+        }
+        
+        .nav-children.collapsed {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900">
+    <div class="flex min-h-screen">
+        <!-- Left Sidebar -->
+        <aside id="sidebar" class="sticky top-0 h-screen w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 overflow-y-auto">
+            <div class="flex h-16 items-center border-b border-slate-200 dark:border-slate-800 px-4">
+                <span id="sidebarBrand" class="font-semibold text-slate-900 dark:text-white">Syslang</span>
+            </div>
+            <nav class="p-4" id="leftNav">
+                <!-- Collapsible Section 1 -->
+                <div class="nav-section mb-4">
+                    <button class="nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white mb-2">
+                        <span class="material-symbols-outlined text-lg transition-transform nav-arrow">expand_more</span>
+                        Getting Started
+                    </button>
+                    <div class="nav-children pl-4 space-y-1 relative">
+                        <div class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-slate-300 dark:bg-slate-700"></div>
+                        <a href="#introduction" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Introduction</a>
+                        <a href="#installation" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Installation</a>
+                        <a href="#quick-start" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Quick Start</a>
+                    </div>
+                </div>
+
+                <!-- Collapsible Section 2 -->
+                <div class="nav-section mb-4">
+                    <button class="nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white mb-2">
+                        <span class="material-symbols-outlined text-lg transition-transform nav-arrow">expand_more</span>
+                        Language Reference
+                    </button>
+                    <div class="nav-children pl-4 space-y-1 relative">
+                        <div class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-slate-300 dark:bg-slate-700"></div>
+                        <a href="#syntax" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Syntax</a>
+                        <a href="#types" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Types</a>
+                        <a href="#functions" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Functions</a>
+                    </div>
+                </div>
+
+                <!-- Collapsible Section 3 -->
+                <div class="nav-section mb-4">
+                    <button class="nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white mb-2">
+                        <span class="material-symbols-outlined text-lg transition-transform nav-arrow">expand_more</span>
+                        API Reference
+                    </button>
+                    <div class="nav-children pl-4 space-y-1 relative">
+                        <div class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-slate-300 dark:bg-slate-700"></div>
+                        <a href="#stdlib" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Standard Library</a>
+                        <a href="#builtins" class="nav-child block px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">Built-ins</a>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main content area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Top Bar -->
+            <header class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                <div class="flex h-16 items-center px-4 gap-4">
+                    <!-- Search -->
+                    <div class="relative flex-1 max-w-md">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                        <input type="text" placeholder="Search docs..." class="w-full h-10 rounded-md border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm outline-none focus:border-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-slate-600">
+                    </div>
+
+                    <!-- Spacer -->
+                    <div class="flex-1"></div>
+                    <!-- Right controls -->
+                    <div class="flex items-center gap-2">
+                        <div class="relative">
+                            <button id="neonToggle" class="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 dropdown-btn">
+                                <span class="material-symbols-outlined text-xl">palette</span>
+                            </button>
+                            <div id="neonDropdown" class="hidden absolute right-0 mt-2 w-44 rounded-lg border border-slate-200 bg-slate-50 dark:bg-slate-800 py-1 shadow-lg z-50">
+                                <button data-sidebar="default" class="sidebar-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg">block</span>
+                                    Default
+                                </button>
+                                <div class="my-1 border-t border-slate-200 dark:border-slate-600"></div>
+                                <button data-sidebar="neon-magenta" class="sidebar-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg" style="color: #ff00ff;">star</span>
+                                    Neon Magenta
+                                </button>
+                                <button data-sidebar="neon-cyan" class="sidebar-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg" style="color: #00ffff;">water_drop</span>
+                                    Neon Cyan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Content theme dropdown -->
+                        <div class="relative">
+                            <button id="themeToggle" class="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 dropdown-btn">
+                                <span id="lightIcon" class="material-symbols-outlined text-xl">light_mode</span>
+                                <span id="darkIcon" class="material-symbols-outlined text-xl hidden">dark_mode</span>
+                            </button>
+                            <div id="themeDropdown" class="hidden absolute right-0 mt-2 w-36 rounded-lg border border-slate-200 bg-slate-50 dark:bg-slate-800 py-1 shadow-lg z-50">
+                                <button data-theme="light" class="theme-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg">light_mode</span>
+                                    Light
+                                </button>
+                                <button data-theme="dark" class="theme-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg">dark_mode</span>
+                                    Dark
+                                </button>
+                                <button data-theme="system" class="theme-option flex items-center gap-2 px-4 py-1 text-sm dropdown-item text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-lg">desktop_windows</span>
+                                    System
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page content with right sidebar -->
+            <div class="flex flex-1">
+                <!-- Main content -->
+                <main class="flex-1 p-8 min-w-0">
+                    <h1 class="text-3xl font-bold dark:text-white">Welcome to Syslang</h1>
+                    <p class="mt-4 text-slate-600 dark:text-slate-400">
+                        A mid-level programming language with first-class inline assembly.
+                    </p>
+
+                    <h2 id="introduction" class="text-2xl font-bold mt-8 dark:text-white">Introduction</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Syslang is a modern programming language that combines the expressiveness of high-level languages with the control of low-level programming.
+                    </p>
+
+                    <h2 id="installation" class="text-2xl font-bold mt-8 dark:text-white">Installation</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Install Syslang using our official installer or build from source.
+                    </p>
+
+                    <h2 id="quick-start" class="text-2xl font-bold mt-8 dark:text-white">Quick Start</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Get started with your first Syslang program.
+                    </p>
+
+                    <h2 id="syntax" class="text-2xl font-bold mt-8 dark:text-white">Syntax</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Learn about Syslang's syntax and grammar.
+                    </p>
+
+                    <h2 id="types" class="text-2xl font-bold mt-8 dark:text-white">Types</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Understanding data types in Syslang.
+                    </p>
+
+                    <h2 id="functions" class="text-2xl font-bold mt-8 dark:text-white">Functions</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Defining and using functions.
+                    </p>
+
+                    <h2 id="stdlib" class="text-2xl font-bold mt-8 dark:text-white">Standard Library</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Built-in modules and functions.
+                    </p>
+
+                    <h2 id="builtins" class="text-2xl font-bold mt-8 dark:text-white">Built-ins</h2>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">
+                        Core language built-ins.
+                    </p>
+                </main>
+
+                <!-- Right Sidebar (On this page) -->
+                <aside id="rightSidebar" class="w-56 flex-shrink-0 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 hidden xl:block">
+                    <h3 class="right-nav-title text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-3">On this page</h3>
+                    <nav class="right-nav space-y-1">
+                        <a href="#introduction" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Introduction</a>
+                        <a href="#installation" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Installation</a>
+                        <a href="#quick-start" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Quick Start</a>
+                        <a href="#syntax" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Syntax</a>
+                        <a href="#types" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Types</a>
+                        <a href="#functions" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Functions</a>
+                        <a href="#stdlib" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Standard Library</a>
+                        <a href="#builtins" class="right-nav-link block text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Built-ins</a>
+                    </nav>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var sidebar = document.getElementById('sidebar');
+        var sidebarBrand = document.getElementById('sidebarBrand');
+
+        function getPreferredTheme() {
+            return localStorage.getItem('theme') || 'system';
+        }
+
+        function applyTheme() {
+            var theme = getPreferredTheme();
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var isDark = theme === 'dark' || (theme === 'system' && prefersDark);
+            
+            var lightIcon = document.getElementById('lightIcon');
+            var darkIcon = document.getElementById('darkIcon');
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                if (lightIcon) lightIcon.classList.add('hidden');
+                if (darkIcon) darkIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
+                if (lightIcon) lightIcon.classList.remove('hidden');
+                if (darkIcon) darkIcon.classList.add('hidden');
+            }
+            
+            applySidebarTheme();
+        }
+
+        applyTheme();
+
+        document.getElementById('neonToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('neonDropdown').classList.toggle('hidden');
+            document.getElementById('themeDropdown').classList.add('hidden');
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('themeDropdown').classList.toggle('hidden');
+            document.getElementById('neonDropdown').classList.add('hidden');
+        });
+
+        document.addEventListener('click', function(e) {
+            document.getElementById('themeDropdown').classList.add('hidden');
+            document.getElementById('neonDropdown').classList.add('hidden');
+        });
+
+        document.querySelectorAll('.theme-option').forEach(function(option) {
+            option.addEventListener('click', function() {
+                localStorage.setItem('theme', this.getAttribute('data-theme'));
+                applyTheme();
+            });
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            if (getPreferredTheme() === 'system') {
+                applyTheme();
+            }
+        });
+
+        function getSidebarTheme() {
+            return localStorage.getItem('sidebarTheme') || 'default';
+        }
+
+        function applySidebarTheme() {
+            var theme = getSidebarTheme();
+            localStorage.setItem('sidebarTheme', theme);
+            var isDark = document.documentElement.classList.contains('dark');
+            var leftNav = document.getElementById('leftNav');
+            var rightSidebar = document.getElementById('rightSidebar');
+            
+            sidebar.className = 'sticky top-0 h-screen w-64 flex-shrink-0 border-r ' + (isDark ? 'border-slate-800' : 'border-slate-200');
+            
+            // Reset right sidebar
+            rightSidebar.className = 'w-56 flex-shrink-0 border-l border-slate-200 dark:border-slate-800 p-4 hidden xl:block';
+            
+            var toggles = document.querySelectorAll('.nav-section-toggle');
+            var childLinks = document.querySelectorAll('.nav-child');
+            
+            if (theme === 'default') {
+                if (isDark) {
+                    sidebar.classList.add('bg-slate-950');
+                    sidebarBrand.className = 'font-semibold text-white';
+                    rightSidebar.classList.add('bg-slate-950');
+                    toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-200 hover:text-white mb-2'; });
+                    childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm text-slate-400 hover:text-white rounded-md hover:bg-slate-800'; });
+                } else {
+                    sidebar.classList.add('bg-slate-50');
+                    sidebarBrand.className = 'font-semibold text-slate-900';
+                    rightSidebar.classList.add('bg-white');
+                    toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-700 hover:text-slate-900 mb-2'; });
+                    childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100'; });
+                }
+            } else if (theme === 'neon-magenta') {
+                sidebar.classList.add('sidebar-neon-magenta');
+                rightSidebar.classList.add('sidebar-neon-magenta');
+                if (!isDark) {
+                    sidebar.classList.add('light');
+                    rightSidebar.classList.add('light');
+                }
+                sidebarBrand.className = 'font-semibold brand';
+                toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm mb-2'; });
+                childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm rounded-md'; });
+            } else if (theme === 'neon-cyan') {
+                sidebar.classList.add('sidebar-neon-cyan');
+                rightSidebar.classList.add('sidebar-neon-cyan');
+                if (!isDark) {
+                    sidebar.classList.add('light');
+                    rightSidebar.classList.add('light');
+                }
+                sidebarBrand.className = 'font-semibold brand';
+                toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm mb-2'; });
+                childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm rounded-md'; });
+            } else {
+                if (isDark) {
+                    sidebar.classList.add('bg-slate-950');
+                    sidebarBrand.className = 'font-semibold text-white';
+                    rightSidebar.classList.add('bg-slate-950');
+                    toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-200 hover:text-white mb-2'; });
+                    childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm text-slate-400 hover:text-white rounded-md hover:bg-slate-800'; });
+                } else {
+                    sidebar.classList.add('bg-slate-50');
+                    sidebarBrand.className = 'font-semibold text-slate-900';
+                    rightSidebar.classList.add('bg-white');
+                    toggles.forEach(function(t) { t.className = 'nav-section-toggle flex items-center gap-2 w-full text-left font-semibold text-sm text-slate-700 hover:text-slate-900 mb-2'; });
+                    childLinks.forEach(function(l) { l.className = 'nav-child block px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 rounded-md hover:bg-slate-100'; });
+                }
+            }
+        }
+
+        applySidebarTheme();
+
+        document.querySelectorAll('.sidebar-option').forEach(function(option) {
+            option.addEventListener('click', function() {
+                localStorage.setItem('sidebarTheme', this.getAttribute('data-sidebar'));
+                applySidebarTheme();
+            });
+        });
+
+        // Collapsible sections
+        document.querySelectorAll('.nav-section-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                var children = this.parentElement.querySelector('.nav-children');
+                var arrow = this.querySelector('.nav-arrow');
+                children.classList.toggle('collapsed');
+                arrow.classList.toggle('rotated');
+            });
+        });
+    </script>
+
+</body>
+
+</html>
