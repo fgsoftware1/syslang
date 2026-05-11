@@ -209,12 +209,6 @@ fn List{Statement} Parser.parseBody(&self)
 
 fn AsmFunction Parser.parseAsmFunction(&self)
 {
-	bool is_public = false;
-	if (self.peek().type == TokenType.TOKEN_PUB)
-	{
-		self.next();
-		is_public = true;
-	}
 	self.expect(TokenType.TOKEN_ASM);
 	Token name = self.expect(TokenType.TOKEN_IDENTIFIER);
 	self.expect(TokenType.TOKEN_LPAREN);
@@ -230,7 +224,7 @@ fn AsmFunction Parser.parseAsmFunction(&self)
 	}
 	self.expect(TokenType.TOKEN_LBRACE);
 	List{Statement} body = self.parseBody();
-	return (AsmFunction) { .name = name.value, .params = params, .return_reg = return_reg, .body = body, .is_public = is_public };
+	return (AsmFunction) { .name = name.value, .params = params, .return_reg = return_reg, .body = body };
 }
 
 fn List{FnStatement} Parser.parseFnBody(&self)
@@ -285,6 +279,13 @@ fn FnFunction Parser.parseFnFunction(&self)
 
 fn Function Parser.parseFunction(&self)
 {
+	bool is_public = false;
+    if (self.peek().type == TokenType.TOKEN_PUB)
+    {
+        self.next();
+        is_public = true;
+    }
+
 	Token t = self.peek();
 	if (t.type == TokenType.TOKEN_ASM)
 	{
